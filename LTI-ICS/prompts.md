@@ -7,19 +7,19 @@ Create a new agent call product-owner. This agent should take into account the f
 
 ---
 ## Prompt - 2026-03-29T04:19:13Z
-### Agent: Agent
+### Agent: product-owner
 
 The output of the @.cursor/skills/build-backlog/SKILL.md should be a file named UserStories-ICS.md. Validate that this is the output of this skill. In case there is not, please fix it.
 
 ---
 ## Prompt - 2026-03-29T04:38:05Z
-### Agent: Agent
+### Agent: documentation-auditor
 
 Update the @.cursor/agents/documentation-auditor.md to validate the backlog output taking into account INVEST-compliant, intelligent descomposition of epics, acceptance criteria template and BDD, realistic prioritization and estimation using points. The backlog should be sorted by priority. The factors to prioritize the backlog are: Business Value, Urgency, Dependencies, Implementation Cost, Potential Risks and Obstacles, User Feedback, Technological Maturity. [REDACTED: full user story example provided as format reference]
 
 ---
 ## Prompt - 2026-03-29T04:40:50Z
-### Agent: Agent
+### Agent: documentation-auditor
 
 Confirms that all files in the @.cursor/ do not have broken or incomplete references.
 
@@ -49,7 +49,7 @@ Confirms that all files in the @.cursor/ do not have broken or incomplete refere
 
 ---
 ## Prompt - 2026-03-29T05:20:31Z
-### Agent: Agent
+### Agent: commit
 
 @.cursor/skills/commit/SKILL.md
 
@@ -71,7 +71,7 @@ and numbering convention rather than a fixed count.
 
 ---
 ## Prompt - 2026-03-29T06:10:00Z
-### Agent: Agent
+### Agent: product-owner
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -87,7 +87,7 @@ When / Then".
 
 ---
 ## Prompt - 2026-03-29T06:20:00Z
-### Agent: Agent
+### Agent: commit
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -101,7 +101,7 @@ in that section.
 
 ---
 ## Prompt - 2026-03-29T06:30:00Z
-### Agent: Agent
+### Agent: architect
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -114,7 +114,7 @@ closing "```" with "````" while leaving the inner "```mermaid" and its closing
 
 ---
 ## Prompt - 2026-03-29T06:40:00Z
-### Agent: Agent
+### Agent: product-manager
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -132,7 +132,7 @@ the same section names.
 
 ---
 ## Prompt - 2026-03-29T06:50:00Z
-### Agent: Agent
+### Agent: documentation-auditor
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -149,7 +149,7 @@ formatting checks and failure reporting for missing or malformed prompt logs.
 
 ---
 ## Prompt - 2026-03-29T07:00:00Z
-### Agent: Agent
+### Agent: architect
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -165,7 +165,7 @@ boundary.
 
 ---
 ## Prompt - 2026-03-29T07:10:00Z
-### Agent: Agent
+### Agent: architect
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -179,7 +179,7 @@ CAL, ASMT_EXT, LLM) and people connected to SYS.
 
 ---
 ## Prompt - 2026-03-29T07:20:00Z
-### Agent: Agent
+### Agent: architect
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -208,7 +208,7 @@ across entries and preserving the surrounding prompt formatting.
 
 ---
 ## Prompt - 2026-03-29T07:40:00Z
-### Agent: Agent
+### Agent: product-owner
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -223,7 +223,7 @@ the correct length).
 
 ---
 ## Prompt - 2026-03-29T07:50:00Z
-### Agent: Agent
+### Agent: product-owner
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -242,3 +242,22 @@ canonical relationship.
 ### Agent: documentation-auditor
 
 @.cursor/agents/documentation-auditor.md @.cursor/skills/validate-artifacts/SKILL.md
+
+---
+## Prompt - 2026-03-29T08:20:00Z
+### Agent: Agent
+
+Verify each finding against the current code and only fix it if needed.
+
+In `@LTI-ICS/prompts.md`:
+- Around line 4-242: The prompts.md entries use the generic heading token "###
+Agent: Agent" in many places which breaks traceability; replace each occurrence
+of "### Agent: Agent" with the concrete agent/skill identifier that the prompt
+references (e.g., use "product-owner" for prompts that touch
+@.cursor/skills/build-backlog/SKILL.md, "documentation-auditor" for validation
+prompts, "architect" for develop-architect SKILL fixes, "product-manager" for
+generate-prd SKILL fixes, and other specific names like "commit" or
+"Chat/Composer/Cursor" for generic entries), ensuring each prompt heading
+matches the agent identity mentioned inside the prompt and that every unique
+prompt entry uses a consistent concrete identifier instead of the generic
+"Agent".
