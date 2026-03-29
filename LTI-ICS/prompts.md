@@ -15,7 +15,7 @@ The output of the @.cursor/skills/build-backlog/SKILL.md should be a file named 
 ## Prompt - 2026-03-29T04:38:05Z
 ### Agent: documentation-auditor
 
-Update the @.cursor/agents/documentation-auditor.md to validate the backlog output taking into account INVEST-compliant, intelligent descomposition of epics, acceptance criteria template and BDD, realistic prioritization and estimation using points. The backlog should be sorted by priority. The factors to prioritize the backlog are: Business Value, Urgency, Dependencies, Implementation Cost, Potential Risks and Obstacles, User Feedback, Technological Maturity. [REDACTED: full user story example provided as format reference]
+Update the @.cursor/agents/documentation-auditor.md to validate the backlog output taking into account INVEST-compliant, intelligent decomposition of epics, acceptance criteria template and BDD, realistic prioritization and estimation using points. The backlog should be sorted by priority. The factors to prioritize the backlog are: Business Value, Urgency, Dependencies, Implementation Cost, Potential Risks and Obstacles, User Feedback, Technological Maturity. [REDACTED: full user story example provided as format reference]
 
 ---
 ## Prompt - 2026-03-29T04:40:50Z
@@ -278,3 +278,16 @@ you want kept as generic to use Chat/Composer/Cursor as appropriate); then
 update the commit message to accurately reflect the number and names of
 preserved generic labels and ensure the final prompt text aligns with the
 renamed headers.
+
+---
+## Prompt - 2026-03-29T09:00:00Z
+### Agent: Cursor
+
+Verify each finding against the current code and only fix it if needed.
+
+In `@LTI-ICS/prompts.md` at line 18, Replace the misspelled word "descomposition"
+with "decomposition" in the prompt text that updates the
+@.cursor/agents/documentation-auditor.md (the string "validate the backlog
+output taking into account INVEST-compliant, intelligent descomposition of
+epics..."); ensure the corrected prompt reads "intelligent decomposition of
+epics" so the governance prompt no longer contains the typo.
