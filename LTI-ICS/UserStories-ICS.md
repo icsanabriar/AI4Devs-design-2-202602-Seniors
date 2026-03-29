@@ -114,7 +114,7 @@
 
 | Parameter | Value |
 |-----------|-------|
-| Sprint length | 2 weeks (Apr 29–May 9) |
+| Sprint length | 11 days (Apr 29–May 9) |
 | Team size | 5 developers |
 | Estimated velocity | 35 story points |
 | Buffer | 15% |
@@ -203,7 +203,7 @@
 - S-025 depends on S-022 (notifications for interview invites).
 - S-026 depends on S-013 (hire is a terminal stage move).
 - S-028 depends on S-013 (assessment is triggered from a pipeline stage).
-- S-030 depends on S-026 (offer precedes or accompanies hire).
+- S-030 depends on S-026 (accepted-offer flow invokes the hire action; S-026 must be implemented before S-030 can trigger it).
 - **Phase pull-forward:** S-030 (FR-024, offer management) is placed in PRD Phase 3, but is pulled into Sprint 5 because offer tracking completes the end-to-end hiring funnel needed for UAT — without it, the hire action (S-026) leaves a gap between interview and hire that pilot customers would flag.
 - **Risk:** OAuth token refresh for Google/Outlook may require dedicated error handling; plan for integration testing time.
 

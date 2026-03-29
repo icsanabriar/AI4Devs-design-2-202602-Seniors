@@ -195,7 +195,6 @@ flowchart TB
   API --> WRK
   WRK --> CAL
   WRK --> EMAIL
-  API --> EMAIL
 ```
 
 ## Data model
@@ -448,7 +447,6 @@ flowchart LR
     CAN[Candidate]
   end
   SYS[LTI ATS]
-  IDP[ATS auth module — email+password FR-027]
   EMAIL[Email provider]
   CAREERS[Careers page]
   CAL[Calendar provider]
@@ -458,7 +456,6 @@ flowchart LR
   HM --> SYS
   ADM --> SYS
   CAN --> SYS
-  SYS --> IDP
   SYS --> EMAIL
   SYS --> CAREERS
   SYS --> CAL
@@ -477,21 +474,15 @@ flowchart TB
     W2[Candidate apply web]
   end
   subgraph LTI_ATS["LTI ATS"]
-    API[ATS API application]
+    API["ATS API application\n(incl. auth module — email+password FR-027)"]
     WRK[Integration worker]
     DB[(PostgreSQL)]
     RED[(Redis)]
     OBJ[(Object storage)]
   end
-  subgraph LTI_auth["Internal"]
-    AUTH[ATS auth module — email+password FR-027]
-  end
   EXT[External providers — careers sync / email / calendar / LLM]
   W1 -->|HTTPS JSON sync| API
   W2 -->|HTTPS JSON sync| API
-  W1 --> AUTH
-  W2 --> AUTH
-  AUTH -->|JWT issued| API
   API -->|SQL sync| DB
   API -->|S3 API sync| OBJ
   API -->|TCP sync| RED
