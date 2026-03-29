@@ -1,0 +1,59 @@
+---
+description: "10 — Repo purpose, LTI/ATS context, delivery layout, collaboration (foundation)"
+alwaysApply: true
+---
+
+# Project overview and rule stack
+
+## Purpose
+
+Define **why this repository exists**, **what “done” means** at course level, and how numbered rules fit together so assistants and humans can audit governance in a fixed order.
+
+## Scope
+
+- **Global (this repository):** collaborative design workspace, git/PR workflow, default preference to edit contributor `LTI-*` trees.
+- **Project-specific (LTI / AI4Devs exercise):** ATS client context, required design phases, **example** contributor layout using slug `LTI-ICS` (other slugs such as `LTI-ARM` follow the **same** naming pattern).
+
+## Rule stack (numeric order)
+
+Rule files use prefixes **`10-`** … **`60-`** for stable ordering and extension.
+
+| Order | File | Topic |
+|-------|------|--------|
+| 10 | `10-project-overview.mdc` | Repository purpose and course context |
+| 20 | `20-deliverable-markdown.mdc` | Required sections in main **`LTI-*/LTI-*.md`** deliverable |
+| 30 | `30-prompt-tracking.mdc` | Mandatory prompt logging |
+| 40 | `40-naming-and-paths.mdc` | Paths, filenames, placeholders |
+| 50 | `50-diagram-standards.mdc` | Mermaid, C4, ERD, architecture consistency |
+| 60 | `60-review-and-validation.mdc` | Pre-completion validation |
+
+**Precedence:** Assistants MUST apply every rule whose **Scope** matches the current task. Where a topic is covered in both a broad and a narrow rule (e.g. paths in `40-` and deliverables in `20-`), the **narrower** rule controls that topic. MUST NOT ignore a higher-numbered rule because a lower-numbered rule was silent on that detail.
+
+## Requirements (repository)
+
+1. This repository is a **collaborative course workspace** for analyzing and designing a software system. Students contribute via **pull requests**; maintainers merge into a shared base.
+2. **Product context (LTI exercise):** Client **LTI** builds a next-generation **ATS (Applicant Tracking System)**. Work is **design and documentation only**—no production implementation requirement in-repo.
+3. **Differentiators** that MUST be reflected in designs: HR efficiency, real-time collaboration (recruiters ↔ hiring managers), automations, AI assistance across tasks.
+4. **Design phases** documentation MUST cover: (1) research and analysis, (2) use cases, (3) data modeling, (4) high-level design.
+
+## Requirements (contributor delivery layout — project-specific)
+
+1. Each student/team MUST use a contributor folder named **`LTI-<CONTRIBUTOR-SLUG>`** (example in this repo: **`LTI-ICS`**).
+2. Inside that folder there MUST be:
+   - **Exactly one** consolidated design Markdown file: **`LTI-<CONTRIBUTOR-SLUG>.md`** (basename MUST match the folder name; example: `LTI-ICS/LTI-ICS.md`).
+   - **`prompts.md`** — log of prompts used with AI assistants (see **`.cursor/rules/30-prompt-tracking.mdc`**).
+
+## Requirements (collaboration)
+
+1. Contributors MUST **pull the latest** from the default branch before pushing to reduce merge conflicts.
+2. Submission MUST go through **pull request**; multiple `LTI-*` folders are expected.
+
+## Prohibited behavior
+
+- MUST NOT treat this repository as an implemented product codebase when making governance decisions (design/docs first).
+- MUST NOT place the main course design deliverable at repository root as a substitute for **`LTI-<CONTRIBUTOR-SLUG>/LTI-<CONTRIBUTOR-SLUG>.md`**.
+
+## Verification
+
+- [ ] Assistant edits for course work default into a **`LTI-*`** folder unless the task is explicitly global (e.g. **`ReadMe.md`**, shared assets, `.cursor/`).
+- [ ] Any referenced contributor slug matches folder name and main file basename.

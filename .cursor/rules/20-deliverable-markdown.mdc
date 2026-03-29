@@ -1,0 +1,47 @@
+---
+description: "20 — Required sections for LTI-* main deliverable Markdown (course checklist)"
+globs: "**/LTI-*/LTI-*.md"
+alwaysApply: false
+---
+
+# LTI deliverable Markdown (required content)
+
+## Purpose
+
+Make the **graded consolidated design document** (**`LTI-<CONTRIBUTOR-SLUG>/LTI-<CONTRIBUTOR-SLUG>.md`**) complete, renderable, and auditable against the course checklist. **`prompts.md`** in the same folder is governed by **`.cursor/rules/30-prompt-tracking.mdc`** (logging and deliverable quality)—this rule MUST NOT be treated as applying to **`prompts.md`**, PRDs, **`ADR.md`**, or other **`LTI-*`** Markdown.
+
+## Scope
+
+- **Glob attachment:** files matching **`LTI-<CONTRIBUTOR-SLUG>/LTI-<CONTRIBUTOR-SLUG>.md`** only (same pattern as **`**/LTI-*/LTI-*.md`**; basename aligns with folder per **`.cursor/rules/40-naming-and-paths.mdc`**).
+- **Out of scope for this rule:** **`prompts.md`**, **`LTI-<CONTRIBUTOR-SLUG>/<NNN>-prd.md`**, **`ADR.md`**, and any other Markdown under **`LTI-*`** (those files use other rules or templates).
+
+## Requirements — main design document
+
+The file **`LTI-<CONTRIBUTOR-SLUG>/LTI-<CONTRIBUTOR-SLUG>.md`** MUST contain all of the following:
+
+1. **Brief description** of the LTI ATS design, **added value**, and **competitive advantages**.
+2. **Main functions** explained clearly (scope and user-facing capabilities).
+3. **Lean Canvas** (business model): embedded **Mermaid** or equivalent, or a clear link plus instructions to read it; MUST be legible when rendered (e.g. GitHub).
+4. **Three main use cases:** narrative for **each** use case AND **one diagram per use case** (Mermaid or approved equivalent).
+5. **Data model:** entities, attributes with **name and type**, and **relationships** (typed, reviewable model—not prose-only placeholders).
+6. **High-level system design:** prose **and** a diagram (Mermaid or approved equivalent).
+7. **C4-style depth:** **one** component MUST be drilled into **in depth** (diagram + explanation), consistent with **`.cursor/rules/50-diagram-standards.mdc`**.
+
+Assistants MUST use **Mermaid** where the course expects diagrams unless the user explicitly chooses another repo-friendly format that still renders in the target viewer.
+
+## Prohibited behavior
+
+- MUST NOT omit the main deliverable file or **`prompts.md`** for a complete course submission.
+- MUST NOT substitute a single wall of text for **required diagrams** where the checklist calls for a diagram per item.
+- MUST NOT use **vague attribute lists** without **types** where the checklist requires **name and type**.
+
+## Verification (before calling a deliverable “complete”)
+
+- [ ] All seven main-document bullets above are present and labeled clearly enough for a grader to find.
+- [ ] Three use cases each have **both** narrative **and** a diagram.
+- [ ] Data model lists **types**, not only entity names.
+- [ ] Diagrams render as fenced code blocks or valid image links; no broken Mermaid fence markers.
+
+## Language
+
+Course materials may be EN/ES; the **deliverable language** MUST stay **consistent within one** `LTI-*` folder unless the user explicitly switches.

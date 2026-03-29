@@ -1,0 +1,85 @@
+---
+description: "30 — MANDATORY append-only user prompt log (path, format, failure behavior)"
+alwaysApply: true
+---
+
+## Prompt tracking (mandatory)
+
+## Purpose
+
+Guarantee an **append-only**, **auditable** log of user prompts so course reviewers and maintainers can reproduce how AI assistance was used.
+
+## Scope
+
+- **Global (this repository):** every assistant turn that produces a user-visible reply in this workspace.
+- **Project-specific path:** log file inside the active contributor folder — **`LTI-<CONTRIBUTOR-SLUG>/prompts.md`** (example: **`LTI-ICS/prompts.md`** for the ICS contributor layout described in **`.cursor/rules/10-project-overview.mdc`**).
+
+## Requirements
+
+1. After **every** user message the assistant answers (including short follow-ups), the assistant MUST persist that user message to **`LTI-<CONTRIBUTOR-SLUG>/prompts.md`** using a **real filesystem write** in the **same turn** as the reply.
+2. The assistant MUST create **`LTI-<CONTRIBUTOR-SLUG>/`** and **`prompts.md`** if they do not exist, using the contributor slug for the task:
+   - If the user or edited files identify a specific **`LTI-*`** folder, MUST use that slug.
+   - If multiple **`LTI-*`** folders exist and none is identified, MUST default to **`LTI-ICS`** for this course workspace **or** ask **one** clarifying question if the reply would otherwise log to the wrong contributor.
+3. **Single log file per contributor folder:** MUST NOT write prompt history to **`prompts.md`** at the repository root (obsolete for this project).
+4. **Timestamp:** MUST use **UTC** in ISO 8601 in the heading: `YYYY-MM-DDTHH:mm:ssZ`. If message-specific time is unavailable, MUST use **current UTC** at write time. MUST NOT skip logging for lack of exact message time.
+5. **Agent label:** MUST set `### Agent:` to the active Cursor mode or subagent if known (`Chat`, `Composer`, `Agent`, `architect`, `product-manager`, etc.). If unknown, MUST use `Cursor (unspecified mode)`.
+6. **Redaction:** MUST apply **Redaction policy** before writing the body.
+7. **File initialization:** If `prompts.md` is missing, MUST create it with exactly this first line, then a blank line:  
+   `# Prompts log`
+8. **Append semantics:** MUST append exactly **one** new block at the **end** of the file:
+   - If there is already content **after** the header line, MUST insert a single line containing only **`---`** immediately **before** the new block.
+   - MUST NOT place **`---`** as the first line of the file.
+9. **Append-only:** MUST NOT delete, reorder, or rewrite previous entries; MUST only add to the end.
+
+## Deliverable quality (course; `prompts.md`)
+
+1. **`prompts.md`** MUST exist in the contributor folder and MUST be part of submission hygiene together with the main **`LTI-<CONTRIBUTOR-SLUG>/LTI-<CONTRIBUTOR-SLUG>.md`** deliverable (see **`.cursor/rules/10-project-overview.mdc`**).
+2. Content MUST be **readable** for reviewers (e.g. grouped by phase or artifact).
+3. Logging of **new** prompts MUST satisfy **Requirements** above (append-only, format, timestamps).
+
+## Entry format (required)
+
+```markdown
+## Prompt - <YYYY-MM-DDTHH:mm:ssZ>
+### Agent: <agent label>
+
+<verbatim or redacted user prompt, multiple lines allowed>
+```
+
+Example (separator between this and a prior entry):
+
+```markdown
+---
+## Prompt - 2026-03-19T21:45:03Z
+### Agent: Agent
+
+Summarize recent commits.
+```
+
+## Redaction policy (required)
+
+- MUST replace secrets or confidential fragments with `[REDACTED]` (optionally `[REDACTED: api-key]`).
+- MUST keep enough context that the intent of the prompt remains clear.
+- If the entire prompt is sensitive, MUST still write the heading lines and MUST use `[REDACTED]` as the body.
+
+## Failure behavior
+
+- If **no** file tool or write capability is available and the assistant **must** refuse the whole turn: logging is **excused** for that turn only (document the refusal in the reply).
+- If file tools **are** available: MUST NOT complete the user-facing reply **without** attempting the log write. MUST NOT silently skip logging.
+- If a write **fails** (error, permissions): MUST retry a reasonable alternative once (e.g. correct path), then MUST state in the reply that logging failed and the **exact path** attempted. MUST NOT claim the prompt was logged when it was not.
+
+## Prohibited behavior
+
+- MUST NOT batch multiple user messages into one entry unless they are **one** combined message from the user.
+- MUST NOT log assistant outputs in place of user prompts (this file is for **user** prompts).
+- MUST NOT duplicate the `# Prompts log` header mid-file.
+
+## Verification
+
+- [ ] Latest user message appears at the **end** of the correct **`LTI-<CONTRIBUTOR-SLUG>/prompts.md`**.
+- [ ] Newest entry has valid UTC heading and `### Agent:` line.
+- [ ] Prior entries unchanged (append-only).
+
+## Operational note
+
+Rules do not execute themselves: assistants MUST invoke tools to write **`prompts.md`**. Treat steps in **Requirements** as a **checklist every reply**.

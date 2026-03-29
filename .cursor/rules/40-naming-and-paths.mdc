@@ -1,0 +1,66 @@
+---
+description: "40 — Approved paths, filenames, placeholders, numbering (no ambiguous stems)"
+alwaysApply: true
+---
+
+# Naming and path conventions
+
+## Purpose
+
+Remove ambiguous artifact paths (e.g. bare `-prd.md`) so assistants produce **predictable**, **diff-friendly**, and **machine-auditable** file locations.
+
+## Scope
+
+- **Global (this repository):** all paths under **`ai-specs/`**, shared repo assets, and `.cursor/` references.
+- **Project-specific:** contributor trees **`LTI-<CONTRIBUTOR-SLUG>/`** (example slug **`LTI-ICS`**).
+
+## Placeholder syntax (MUST use explicitly)
+
+| Token | Meaning |
+|--------|---------|
+| `<CONTRIBUTOR-SLUG>` | Folder suffix: `LTI-<CONTRIBUTOR-SLUG>` is the contributor root (e.g. `ICS` → `LTI-ICS`). |
+| `<NNN>` | Three-digit **zero-padded** sequence `001`–`999` for numbered artifacts in a directory. |
+| `<ADR-NNN>` | ADR heading index, three-digit (e.g. `ADR-001`). |
+
+**Forbidden:** ambiguous stems such as **`-prd.md`**, **`-plan.md`**, **`-task.md`**, **`-review.md`** without the **`<NNN>-`** prefix where this rule assigns one.
+
+## How to read path examples in this rule
+
+- **`ai-specs/...` paths** name **where files must live if you create them**; they are **not** a claim that `ai-specs/` already exists in every clone.
+- **`LTI-<CONTRIBUTOR-SLUG>/`** is a **pattern**: substitute your slug (e.g. **`ICS`** → folder **`LTI-ICS/`**). The shorthand **`LTI-*`** in other docs means “any contributor folder matching **`LTI-<CONTRIBUTOR-SLUG>/`**.”
+
+## Requirements — `ai-specs/` (global)
+
+1. Plan files MUST match: **`ai-specs/plan/<NNN>-plan.md`** where filenames match `^\d{3}-plan\.md$`.
+2. Task files MUST match: **`ai-specs/tasks/<NNN>-task.md`** where filenames match `^\d{3}-task\.md$`.
+3. Optional persisted validation reports MUST match: **`ai-specs/review/<NNN>-review.md`** where filenames match `^\d{3}-review\.md$`.
+
+## Requirements — contributor folder (project-specific)
+
+1. Contributor root MUST be **`LTI-<CONTRIBUTOR-SLUG>/`**.
+2. Main deliverable MUST be **`LTI-<CONTRIBUTOR-SLUG>/LTI-<CONTRIBUTOR-SLUG>.md`** (basename MUST equal folder name).
+3. Prompt log MUST be **`LTI-<CONTRIBUTOR-SLUG>/prompts.md`** (see **`.cursor/rules/30-prompt-tracking.mdc`**).
+4. Architecture decision log MUST be **`LTI-<CONTRIBUTOR-SLUG>/ADR.md`** (**append-only** ADRs; numbering, append, supersede, and entry format in **`.cursor/skills/develop-architect/SKILL.md`** — ADR log section).
+5. PRD files (from **generate-prd**) MUST live under the contributor folder: **`LTI-<CONTRIBUTOR-SLUG>/<NNN>-prd.md`** where filenames match `^\d{3}-prd\.md$` (example: **`LTI-ICS/001-prd.md`**).
+
+## Numbering — all paths using `<NNN>` in this rule
+
+1. Next `<NNN>` for a **new** file MUST be computed as: highest existing matching file **in that file’s directory** + 1, or **`001`** if none. MUST NOT reuse an `<NNN>` for a **different** logical artifact unless the user explicitly replaces that file.
+2. When **editing** an existing numbered file, MUST keep the same `<NNN>`; MUST NOT bump the sequence.
+
+## Prohibited behavior
+
+- MUST NOT invent alternate spellings for the same artifact (e.g. `ai-spec/plans/` vs `ai-specs/plan/`).
+- MUST NOT write course prompts to repository-root **`prompts.md`**.
+- MUST NOT use **placeholder-only** filenames without replacing tokens (e.g. a literal file named `LTI-<CONTRIBUTOR-SLUG>.md`).
+
+## Verification
+
+- [ ] Every new `ai-specs` path matches the regex for its subdirectory.
+- [ ] PRD files use **`LTI-<CONTRIBUTOR-SLUG>/<NNN>-prd.md`**, not **`ai-specs/prd/`**.
+- [ ] `LTI-*` main markdown basename matches its parent folder name.
+- [ ] No bare `-prd.md` / `-plan.md` / `-task.md` paths appear in new instructions or files.
+
+## Reference
+
+Detailed **create vs update** behavior for artifacts covered by a skill (e.g. **generate-prd** for PRDs) lives in **`.cursor/skills/`**. For **`ai-specs/plan/<NNN>-plan.md`** and **`ai-specs/tasks/<NNN>-task.md`**, use **numbering in this rule** (the **Numbering** subsection); this repo revision has **no** dedicated skills for plan/task templates. This rule defines **naming compliance**, not full workflow prose.

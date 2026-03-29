@@ -1,0 +1,104 @@
+---
+description: "50 — Mermaid & C4 visual/semantic consistency; grounding in requirements; auditable verification"
+globs:
+  - "**/LTI-*/*.md"
+  - "**/ai-specs/**/*.md"
+alwaysApply: false
+---
+
+# Diagram Standards
+
+## Purpose
+
+Enforce **visual** and **semantic** consistency for **Mermaid** and **C4-style** architecture diagrams so documentation stays **clear**, **mutually coherent**, **grounded** in stated requirements, and **auditable** across related files.
+
+## Scope
+
+This rule applies to **any Markdown artifact** under the globs above that contains **Mermaid-based technical diagrams**, including:
+
+- Mermaid **flowcharts** (including process / workflow views)
+- Mermaid **sequence** diagrams
+- Mermaid **entity-relationship** (`erDiagram`) diagrams
+- Mermaid diagrams used for **architecture** (e.g. structural `flowchart` / `graph` views, C4-style layering in Mermaid)
+- **C4 context** diagrams (system boundary, actors, external systems)
+- **C4 container** diagrams (major runtime / deployable boundaries)
+- **C4 component** diagrams (internal structure **within** one chosen container)
+
+**Primary:** **`LTI-<CONTRIBUTOR-SLUG>/`**. **Also:** **`ai-specs/**/*.md`** when diagrams describe the product or system under design.
+
+## Requirements
+
+### Visual consistency
+
+1. Diagram labels MUST be **concise** and **readable** in the target renderer (e.g. GitHub); avoid cramped or overloaded text.
+2. **Node and edge names** MUST use **consistent terminology** with related diagrams and prose (same system, container, component, actor, datastore names unless a rename is **documented**).
+3. The **same real-world element** MUST NOT appear under **different names** across related diagrams **without** an explicit note (glossary entry, rename rationale, or ADR) explaining the mapping.
+4. Diagrams MUST **avoid unnecessary stylistic noise** (decorative subgraphs, redundant styling) that does not add meaning.
+5. Diagrams MUST be **structured for readability**: prefer **direction** (`LR`, `TD`) and **splitting** dense graphs over a single illegible canvas.
+6. **Actors, services, systems, databases, and trust boundaries** MUST use **stable naming** across **all** diagrams in the same deliverable set.
+7. Diagram text MUST NOT use **ambiguous shorthand** unless that shorthand is **already defined** in the same document’s glossary or narrative.
+
+### Semantic consistency
+
+1. Diagrams MUST **align** with **documented** requirements, **scope**, **constraints**, and **architecture intent** (e.g. **`ReadMe.md`**, PRD, **`LTI-*`** deliverable prose, **`ai-specs/**`**, ADRs).
+2. Diagrams MUST NOT introduce **components**, **actors**, **services**, **integrations**, or **data stores** that are **not** supported by those artifacts or by an explicit **Assumption** / **Open questions** entry in writing.
+3. **C4 abstraction levels** MUST keep their **intended meaning** (see **C4 level discipline** below).
+4. **Data stores**, **external systems**, and **internal application elements** MUST be **visually and semantically distinguishable** (labels, grouping, or prose legend—whichever fits the diagram type).
+5. **Relationships** (edges, messages, links) that need interpretation MUST carry **meaningful labels** or MUST be explained in **adjacent prose** (protocol, direction, sync/async, ownership).
+
+### C4 level discipline
+
+1. **Context** diagrams MUST focus on **people/users**, **external systems**, and the **system under design** at **high** abstraction; MUST NOT show internal implementation or deployable detail that belongs in container/component views.
+2. **Container** diagrams MUST represent **major application or runtime building blocks** (e.g. services, apps, data stores as containers) and their **key interactions**; MUST state **sync vs async** where ambiguity would mislead.
+3. **Component** diagrams MUST stay **inside** the boundary of the **selected** container and describe **internal responsibilities** and dependencies; MUST NOT **invent** internal parts unsupported by requirements or higher-level design.
+4. A **lower-level** diagram MUST **refine** a **higher-level** diagram; MUST NOT **contradict** or **replace** it. If refinement exposes an error in a higher-level view, prose or ADR MUST record the correction—MUST NOT silently overwrite meaning.
+5. **Mixing** C4 levels in one figure MUST NOT **confuse** abstraction (e.g. internal micro-components inside a context diagram without clear framing); if combined for pedagogy, adjacent prose MUST state **what level** each part represents.
+
+### Naming and terminology
+
+1. Names for **systems, containers, components, and actors** MUST be **consistent** across PRD, plans, architecture sections, diagrams, and ADRs.
+2. MUST NOT use **one label** for **two different concepts** in the same diagram set.
+3. MUST NOT use **two labels** for the **same concept** unless the equivalence is **explicitly documented** (glossary or short mapping table).
+4. **Singular vs plural** naming MUST be **consistent** per entity across artifacts (pick one convention per concept and keep it).
+5. Terminology MUST align with **functional language** in requirements (FRs, use cases) and **ubiquitous language** in architecture text.
+
+### Grounding in requirements and decisions
+
+1. Every diagram MUST be **grounded** in **documented** requirements, constraints, or **recorded** architecture decisions—not in unstated intent alone.
+2. Diagrams MUST NOT expand **technical scope** beyond what is **justified** by those sources without labeling **Assumption** or **Open questions** in the same deliverable.
+3. Diagrams MUST **reflect** the **deliverable context** (product boundaries, in-scope actors) given in course or repo docs.
+4. Diagrams MUST remain **traceable** to documented system design: at least one **nearby** paragraph MUST state what the diagram is **evidence of** (which requirement, flow, or decision).
+5. If a diagram depends on **assumptions**, those assumptions MUST appear in **prose** (or Open questions)—MUST NOT be **only** implied by unnamed boxes.
+
+### Architecture Decision Records (when structure changes)
+
+1. When a diagram **commits** to structural choices that constitute decisions, updates MUST follow **`LTI-<CONTRIBUTOR-SLUG>/ADR.md`** rules in **`.cursor/rules/`** and **develop-architect** skill (append-only, no empty stubs).
+2. ADRs MUST NOT introduce **new product scope** without traceability to requirements or labeled assumption.
+
+## Prohibited Behavior
+
+- MUST NOT **invent** unsupported systems, components, integrations, or stores.
+- MUST NOT **mix** C4 abstraction levels in a way that **confuses** readers about scope or ownership.
+- MUST NOT **rename** the same concept across diagrams **without** explicit documentation.
+- MUST NOT leave **critical** relationships **unlabeled** or **unexplained** when the reader cannot infer protocol, direction, or responsibility.
+- MUST NOT publish **cluttered** or **structurally unreadable** diagrams when splitting or simplifying is feasible.
+- MUST NOT use diagrams as **vague illustrations** with **no** architectural or requirements meaning.
+- MUST NOT place **implementation-level** detail in a **context** diagram except as clearly framed **notes**, not as false precision.
+- MUST NOT **contradict** **`ReadMe.md`**, PRD, ADRs, or consolidated architecture prose.
+- MUST NOT use diagrams as **pure decoration** without adjacent purpose/trade-off text (see **Verification**).
+
+## Verification
+
+Before treating diagram work as **complete** or **submission-ready**, verify:
+
+- [ ] **Terminology** matches related artifacts (PRD, `LTI-*` doc, plans, ADRs).
+- [ ] **Abstraction level** is correct for each diagram type (context vs container vs component vs sequence vs ER).
+- [ ] Every **shown element** is **supported** by documentation or explicitly flagged as assumption/open question.
+- [ ] **Relationships** are **understandable** (labels or prose explain interaction where needed).
+- [ ] **Structure** is readable (split graphs, sensible direction, no avoidable clutter).
+- [ ] **Related diagrams** are **mutually consistent** (no contradictions; refinements extend—do not replace—higher levels).
+- [ ] **Visual choices** do not **reduce comprehension** (legends used where shorthand or subgraphs need explanation).
+- [ ] Each Mermaid block uses valid **` ```mermaid `** fences and **renders** in the target viewer.
+- [ ] **2–5 lines** of prose before or after each diagram state **purpose**, **primary flow**, and at least **one** trade-off or **assumption**.
+- [ ] **erDiagram** (when used for course data model) includes **types** and **cardinalities** where required by **`.cursor/rules/20-deliverable-markdown.mdc`**.
+- [ ] **ADR** file updated when the same session **records** new or superseded structural decisions affecting diagrams.
