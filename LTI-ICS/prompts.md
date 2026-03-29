@@ -1,7 +1,7 @@
 # Prompts log
 
 ## Prompt - 2026-03-29T04:12:04Z
-### Agent: Agent
+### Agent: Tooling
 
 Create a new agent call product-owner. This agent should take into account the following example: https://skills.sh/site/smithery.ai/agile-product-owner
 
@@ -55,7 +55,7 @@ Confirms that all files in the @.cursor/ do not have broken or incomplete refere
 
 ---
 ## Prompt - 2026-03-29T06:00:00Z
-### Agent: Agent
+### Agent: Cursor
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -194,7 +194,7 @@ internal annotation or API -> DB flow remains unchanged).
 
 ---
 ## Prompt - 2026-03-29T07:30:00Z
-### Agent: Agent
+### Agent: Cursor
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -245,7 +245,7 @@ canonical relationship.
 
 ---
 ## Prompt - 2026-03-29T08:20:00Z
-### Agent: Agent
+### Agent: Cursor
 
 Verify each finding against the current code and only fix it if needed.
 
@@ -261,3 +261,20 @@ generate-prd SKILL fixes, and other specific names like "commit" or
 matches the agent identity mentioned inside the prompt and that every unique
 prompt entry uses a consistent concrete identifier instead of the generic
 "Agent".
+
+---
+## Prompt - 2026-03-29T08:40:00Z
+### Agent: Cursor
+
+Verify each finding against the current code and only fix it if needed.
+
+In `@LTI-ICS/prompts.md` at line 4, There are four occurrences of the generic
+header "### Agent: Agent" but the commit claims only three generic labels; pick
+one of the four headers to make specific (e.g., rename it to a clear role like
+"### Agent: Tooling" or "### Agent: Housekeeping"), and replace the remaining
+generic "Agent" entries with the recommended tokens (Chat, Composer, or Cursor)
+per the final prompt guidance to improve traceability (update the three entries
+you want kept as generic to use Chat/Composer/Cursor as appropriate); then
+update the commit message to accurately reflect the number and names of
+preserved generic labels and ensure the final prompt text aligns with the
+renamed headers.
