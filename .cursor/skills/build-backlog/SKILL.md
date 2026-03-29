@@ -71,7 +71,7 @@ For each epic or functional area, generate stories that satisfy **INVEST**:
 
 ### 3. Write acceptance criteria (BDD)
 
-Each story MUST have acceptance criteria written in **Behavior-Driven Development (BDD)** format using **Given / When / Then** (also expressed as **Since / When / Then**):
+Each story MUST have acceptance criteria written in **Behavior-Driven Development (BDD)** format using **Given / When / Then**:
 
 ```markdown
 **Acceptance criteria (BDD):**

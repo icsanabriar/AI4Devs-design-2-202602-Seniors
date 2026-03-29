@@ -112,6 +112,15 @@ Use this outline; adapt depth to input size.
 ## Milestones / phasing
 <!-- MVP vs later; dependencies called out. -->
 
+## Data model (conceptual)
+<!-- Key entities and relationships at product level; flag "finalize with architect" for typed ERD. -->
+
+## High-level system design
+<!-- Product-depth architecture overview; include a Mermaid diagram (flowchart or C4 context/container draft). -->
+
+## C4 component focus (draft)
+<!-- Optional: sketch one component if useful; or note "handoff to develop-architect" and leave as placeholder. -->
+
 ## Risks, assumptions, dependencies
 
 ## Open questions

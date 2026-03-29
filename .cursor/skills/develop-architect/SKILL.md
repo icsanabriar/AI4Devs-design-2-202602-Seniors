@@ -96,12 +96,12 @@ Apply when proposing **structure** inside an application boundary; adapt to mono
 
 Produce architecture artifacts with fenced Mermaid blocks.
 
-```markdown
+````markdown
 ```mermaid
 flowchart LR
   A[Actor] --> B[System]
 ```
-```
+````
 
 - Prefer `flowchart`, `sequenceDiagram`, `erDiagram` as appropriate.  
 - Pair each block with **2–5 lines** explaining purpose, flows, and trade-offs.

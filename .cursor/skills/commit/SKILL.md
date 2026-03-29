@@ -56,8 +56,7 @@ feat(dn): Add new diagram for candidates component
 ```
 
 - **type:** `feat` | `fix` | `docs` | `chore` | `refactor` | `style` | `test` — closest [Conventional Commits](https://www.conventionalcommits.org/) type.
-<type>(<scope>): <Imperative description with capitalized first word after the colon>
-**description:** Imperative mood; **first word after `:` is capitalized** to match project examples; **no** trailing period.
+- **description:** Imperative mood; **first word after `:` is capitalized** to match project examples; **no** trailing period.
 
 ### Suggested scopes (LTI design repo)
 
