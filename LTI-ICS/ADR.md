@@ -7,7 +7,7 @@
 **Status:** Accepted  
 **Date:** 2026-03-22  
 **Context:**  
-MVP must cover seven hiring lifecycle stages (see **001-prd.md**). **External integrations in MVP** are scoped to the **company careers page** (third-party job boards deferred per **FR-004**), **email**, **calendar** providers, and **LLM** calls behind AI features. The **assessment lifecycle** is supported via **link-out URLs** and **manual outcome capture** in-app; **assessment vendor APIs** are **deferred** (**FR-016**). **Automations** and **auditability** span stages. Team size and time-to-market favor shipping a coherent boundary before splitting services.
+MVP must cover seven hiring lifecycle stages (see **001-prd.md**). **External integrations in MVP** are scoped to the **company careers page** (third-party job boards deferred per **FR-004**), **email**, **calendar** providers, and **LLM** calls behind AI features. The **assessment lifecycle** is supported via **signed, expiring per-application link-out URLs** and **manual outcome capture** in-app (see **001-prd.md** **FR-016** and **## Architectural decisions (resolved open questions)**); **assessment vendor APIs** are **deferred**. **Automations** and **auditability** span stages. Team size and time-to-market favor shipping a coherent boundary before splitting services.
 
 **Decision:**  
 Deploy **one primary API application** (modular monolith) owning domain logic, RBAC, and synchronous reads/writes to the system of record. Run a separate **integration worker** process for retries, webhooks, outbound email, and provider polling—communicating via the database (outbox pattern) and/or a **message queue** *implementation detail left to implementation*.
@@ -17,7 +17,7 @@ Deploy **one primary API application** (modular monolith) owning domain logic, R
 - **Serverless-only orchestration** — fast to prototype; cold starts, vendor coupling, and debugging complexity for long-running automations. **Deferred.**
 
 **Consequences:**  
-Clear single deployment for core logic; team must enforce **module boundaries** in code to avoid a big ball of mud. Worker scale-out remains possible without splitting the domain prematurely.
+Clear single deployment for core logic; team must enforce **module boundaries** in code to avoid a big ball of mud. Worker scale-out remains possible without splitting the domain prematurely. **Assessment** redirect URL signing, expiry, and **per-application** attribution are **normative** in **001-prd.md** **FR-016** and **## Architectural decisions (resolved open questions)**—the **ATS API application** (modular monolith) should **own** generating and validating those links; the **integration worker** remains responsible for **email**, **calendar**, and **careers** publishing retries and similar connector work.
 
 ---
 
@@ -55,7 +55,7 @@ Store **metadata and pointers** in PostgreSQL; store **file blobs** in **S3-comp
 - **External DAM** — overkill for MVP.
 
 **Consequences:**  
-Extra moving part for local dev; need lifecycle rules (retention, deletion on erasure requests—**Open question** with legal).
+Extra moving part for local dev; need lifecycle rules (retention, deletion on erasure requests). Retention and erasure policy is addressed in **001-prd.md** NFR-003–NFR-006 and the **Architectural decisions** section (versioned consent notices, LGPD + Ley 1581); specific retention durations require legal sign-off before MVP launch (acceptance criterion AC-008).
 
 ---
 
@@ -93,4 +93,4 @@ Implement an **AI orchestration** component inside the API process (module bound
 - **Client-side LLM** — unacceptable leakage risk for candidate PII. **Rejected.**
 
 **Consequences:**  
-Latency and cost tied to provider; need rate limits, redaction hooks, and monitoring for prompt injection (see **Open questions** in deliverable).
+Latency and cost tied to provider; need rate limits, redaction hooks, and monitoring for prompt injection. Prompt-injection monitoring and AI output traceability requirements are captured in NFR-010 and NFR-011; remaining operational details (rate-limit thresholds, redaction rules) are implementation concerns for the engineering team.

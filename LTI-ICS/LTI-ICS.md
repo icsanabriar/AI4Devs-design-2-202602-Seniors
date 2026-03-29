@@ -98,7 +98,7 @@ Each use case includes a **short narrative** and **one diagram**, aligned with *
 
 ### UC-1 — Create, approve, and post a job
 
-**Narrative:** A recruiter drafts a **Job requisition** from a template and submits it for approval. An authorized hiring manager approves via the **Recruiter web app** (authenticated through the corporate **identity provider**). Once approved, the **ATS API** creates **Job posting** records for the **company careers page** (FR-004: **no third-party job boards in MVP**). Publish may run synchronously in the API or via **outbox** to the **integration worker** when retriable (ADR-001). The **PostgreSQL** database holds requisition and posting state; **audit events** record approval and publish actions.
+**Narrative:** A recruiter drafts a **Job requisition** from a template and submits it for approval. An authorized hiring manager approves via the **Recruiter web app** (authenticated via the **ATS auth module** (email + password, **FR-027**; no external SSO in MVP)). Once approved, the **ATS API** creates **Job posting** records for the **company careers page** (FR-004: **no third-party job boards in MVP**). Publish may run synchronously in the API or via **outbox** to the **integration worker** when retriable (ADR-001). The **PostgreSQL** database holds requisition and posting state; **audit events** record approval and publish actions.
 
 ```mermaid
 sequenceDiagram
@@ -106,13 +106,13 @@ sequenceDiagram
   participant R as Recruiter
   participant HM as Hiring manager
   participant WEB as Recruiter web app
-  participant IDP as Identity provider
+  participant IDP as ATS auth module (email+password)
   participant API as ATS API application
   participant DB as PostgreSQL
   participant WRK as Integration worker
   participant CAREERS as Company careers page (LTI)
   R->>WEB: Draft requisition
-  WEB->>IDP: OAuth/OIDC login
+  WEB->>IDP: POST /auth/login (email + password)
   IDP-->>WEB: Tokens
   WEB->>API: POST /requisitions (Bearer)
   API->>DB: Insert requisition draft
@@ -317,6 +317,9 @@ erDiagram
     timestamptz hired_at
     date start_date
     timestamptz submitted_at
+    timestamptz offer_sent_at
+    date offer_expected_response
+    text offer_outcome_code
   }
 
   APPLICATION_STAGE_HISTORY {
@@ -410,24 +413,27 @@ erDiagram
 
 **Notes**
 
-- **`organization_id`** on all tenant tables supports **ADR-002**.  
+- **`organization_id`** on all primary tenant tables supports **ADR-002**. Child tables that are always accessed through a parent with `organization_id` (e.g. `CANDIDATE_DOCUMENT` via `CANDIDATE`, `APPLICATION_STAGE_HISTORY` / `ASSESSMENT_ATTEMPT` / `INTERVIEW` / `FEEDBACK` / `COMMENT` / `AI_INFERENCE_LOG` via `APPLICATION`) rely on **join-path tenant scoping** rather than a redundant column. All query paths MUST filter through a parent row whose `organization_id` is already RBAC-verified.  
 - **`scorecard_json`**, **`metadata`**, and automation definitions use **JSONB** for evolving shapes without blocking MVP.  
 - **FR-001 (hiring team):** **`job_requisition_member`** links **`user_account`** to **`job_requisition`** with **`role_on_req`** (e.g. **primary_recruiter**, recruiter, hiring_manager, coordinator). The **`primary_recruiter`** role is the default source for the **FR-011** pipeline **owner** when no per-application override exists. At least one member with an approver-capable role is required before publish when the org enables approval workflows (policy enforced in the application layer).  
 - **FR-001 (department / location / employment type / compensation):** The PRD’s **department**, **location model**, **employment type**, and optional **compensation band** are carried in **`job_requisition.description_json`** for MVP, with **first-class columns** introduced later only if reporting, search, or external feeds require normalized, queryable fields.  
 - **FR-011 (pipeline “owner”):** MVP does **not** add **`owner_user_id`** on **`application`**. The **owner** shown in the pipeline view is **derived** from **`job_requisition_member`**: prefer the member with **`role_on_req = primary_recruiter`** for that application’s **`job_requisition`**; if **zero or multiple** matches, use an org-defined fallback (e.g. the sole **`recruiter`** member, or **unassigned**). If the product later needs **per-application** ownership independent of the req team, add nullable **`application.owner_user_id`** and treat derivation as the default when it is null.  
 - **FR-021 (hire / fill):** **`application.hired_at`** and **`application.start_date`** capture hire timing; **`job_requisition.filled_count`** increments on hire (capped by **`headcount`**), and **`job_requisition.filled_at`** is set when **`filled_count`** first reaches **`headcount`** (or when the req is manually closed as filled—**business rule** in use-case layer).  
 - **FR-030 (automation audit log):** each rule evaluation or fired action appends **`automation_run_log`** with **`automation_rule_id`**, **`run_at`**, **`actor_kind`** (`system` \| `user`), **`actor_user_id`** set only when **`actor_kind`** is `user` (null for fully system-triggered runs), plus **`status_code`** and optional **`detail_json`** (e.g. action results, errors). Distinct from **`audit_event`** (general domain audit); automation runs may **also** emit **`audit_event`** for critical side effects.  
-- **Dedupe** rules for candidates (PRD open question) may add **`candidate_fingerprint`** or a link table in a later revision.
+- **FR-024 (offer management):** `application.offer_sent_at` records when the offer was issued; `application.offer_expected_response` is the date by which a response is expected; `application.offer_outcome_code` captures the result (`accepted` \| `declined` \| `no_response`). E-signature and compensation approval are out of scope for MVP; those may require a separate `OFFER` entity in a later revision.  
+- **Dedupe** rules for candidates resolved in **001-prd.md** Decisions log: **email as primary key**; admin-initiated manual merge for edge cases. A `candidate_fingerprint` column or link table may be added in a later revision if phone or resume-hash matching is needed.
 
 ## High-level system design
 
 ### Narrative
 
-End users interact with **two web clients**: an internal **Recruiter web app** (recruiters, hiring managers, admins) and a **Candidate apply web** experience. Both call the **ATS API application** over **HTTPS** with **Bearer tokens** from the **identity provider** (candidates may use a separate auth flow or guest apply—**product open question**).
+End users interact with **two web clients**: an internal **Recruiter web app** (recruiters, hiring managers, admins) and a **Candidate apply web** experience. Both call the **ATS API application** over **HTTPS** with **Bearer tokens** issued by the **ATS auth module** (see *Authentication note* below). Candidates may apply without an account (**FR-007**) or create a post-apply account for portal access (**FR-008**, **FR-028**).
 
-The API enforces **Policy and RBAC**, mutates **PostgreSQL**, reads/writes **object storage** for resumes, and publishes **integration commands** and **domain events** through an **outbox** for the **integration worker**. The worker handles **careers-page publishing** (and future external job boards), **email**, and **calendar** integrations—retries and dead letters satisfy NFR-010. **Assessment vendor APIs are out of scope for MVP (FR-016)**; candidates use **link-out** URLs and recruiters record outcomes in-app.
+The API enforces **Policy and RBAC**, mutates **PostgreSQL**, reads/writes **object storage** for resumes, and publishes **integration commands** and **domain events** through an **outbox** for the **integration worker**. The worker handles **careers-page publishing** (and future external job boards), **email**, and **calendar** integrations—retries and dead letters satisfy NFR-010. **Assessment vendor APIs are out of scope for MVP (FR-016)**; candidates use **signed, per-application link-out** URLs (policy in PRD **Architectural decisions**), and recruiters **manually** record outcomes in-app.
 
 **Redis** backs **pub/sub** (and optional cache) for collaboration notifications (ADR-004). **Search index** (OpenSearch/Elasticsearch) remains **optional**; list views can rely on indexed SQL for MVP.
+
+> **Authentication note:** The **ATS auth module** shown in diagrams is an **internal component** of the ATS API application — not an external identity provider. Authentication uses **email + password** per **FR-027**; the module issues short-lived **JWTs** consumed by other modules for authZ decisions. **External SSO** (Google, Microsoft) is **out of scope for MVP** (deferred per Decisions log).
 
 ### C4 context
 
@@ -442,7 +448,7 @@ flowchart LR
     CAN[Candidate]
   end
   SYS[LTI ATS]
-  IDP[Identity provider]
+  IDP[ATS auth module — email+password FR-027]
   EMAIL[Email provider]
   CAREERS[Careers page]
   CAL[Calendar provider]
@@ -477,12 +483,15 @@ flowchart TB
     RED[(Redis)]
     OBJ[(Object storage)]
   end
-  IDP[Identity provider]
+  subgraph LTI_auth["Internal"]
+    AUTH[ATS auth module — email+password FR-027]
+  end
   EXT[External providers — careers sync / email / calendar / LLM]
   W1 -->|HTTPS JSON sync| API
   W2 -->|HTTPS JSON sync| API
-  W1 --> IDP
-  W2 --> IDP
+  W1 --> AUTH
+  W2 --> AUTH
+  AUTH -->|JWT issued| API
   API -->|SQL sync| DB
   API -->|S3 API sync| OBJ
   API -->|TCP sync| RED
@@ -497,7 +506,7 @@ flowchart TB
 
 **Responsibilities**
 
-- **HTTP API adapters:** OpenAPI-shaped REST endpoints, input validation, authN token verification with **Identity provider** JWKS.
+- **HTTP API adapters:** OpenAPI-shaped REST endpoints, input validation, authN via internal **ATS auth module** (email + password per **FR-027**; issues JWTs consumed by other modules).
 - **Policy and RBAC:** Central authorization on **organization_id** scope and role codes (NFR-001).
 - **Requisition module:** approvals, templates, **hiring team membership** (`job_requisition_member`), postings orchestration (FR-001–FR-006).
 - **Application and pipeline module:** intake, stages, history, **pipeline owner resolution** (FR-011: derived **`primary_recruiter`** on **`job_requisition_member`**, with documented fallbacks), **hire timestamps and start date**, requisition **fill counters**, metrics hooks (FR-007–FR-014, FR-021–FR-023).
