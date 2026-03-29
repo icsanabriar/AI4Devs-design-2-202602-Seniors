@@ -30,7 +30,7 @@ This document is the **consolidated design** for contributor folder **LTI-ICS**.
 3. **Operability of integrations** (NFR-010) → **async worker**, retries, and structured failure signals (ADR-001).
 4. **Time-to-market** → **modular monolith** API before service explosion (ADR-001).
 
-**Open questions** (architecture-relevant): data residency, RLS hardening, future external job-board and assessment **API** vendors (MVP: careers page + assessment **link-out** only), retention/deletion for resumes and AI logs—see PRD **Open questions** and **ADR-003** consequences.
+**Open questions** (architecture-relevant): data residency, RLS hardening, future external job-board and assessment **API** vendors (MVP: careers page + **per-application signed** assessment **link-out** only), retention/deletion for resumes and AI logs—see PRD **Architectural decisions** and **ADR-003** consequences.
 
 ## Main functions
 
@@ -42,7 +42,7 @@ Functions follow the **seven ATS stages** in **001-prd.md**, grouped for clarity
 | **Job posting** | **Company careers page** (LTI-hosted) only for MVP; posting status and source attribution | FR-004–FR-006 |
 | **Application intake** | Apply flow, resume storage, knockout questions, dedupe hooks | FR-007–FR-010 |
 | **Application review** | Pipeline view (**owner** derived from hiring team; see Data model notes), scorecards, stage history, assistive AI | FR-011–FR-014 |
-| **Online assessments** | Configurable **link-out URL**, **manual** pass/fail/pending recording, RBAC on results | FR-015–FR-017 |
+| **Online assessments** | **Per-application signed** link-out URL, **manual** pass/fail/pending recording, RBAC on results | FR-015–FR-017 |
 | **Interview scheduling** | Slots, calendar integration, notifications, interview feedback | FR-018–FR-020 |
 | **Hire / reject** | Hired/rejected outcomes, templated comms, funnel metrics, basic offer management | FR-021–FR-024 |
 | **Cross-cutting** | Shared visibility, realtime updates, internal + candidate auth, automations, AI toggles | FR-025–FR-032 |
@@ -172,7 +172,7 @@ sequenceDiagram
 
 ### UC-3 — Assessment, interview, and hire
 
-**Narrative:** For **MVP assessments (FR-016)**, the recruiter opens the **configurable assessment URL** for the job; the candidate completes the test **outside** LTI ATS. The recruiter **manually** records **pass/fail/pending** on the **Assessment attempt** row—there is **no API exchange** with vendors in MVP. For **interviews**, the **integration worker** handles **calendar** and **email** provider calls (may be async); the API proposes slots and stores **Interview** + feedback. **Hire** updates **Application** outcome and **Job requisition** fill counters, with audit entries.
+**Narrative:** For **MVP assessments (FR-016)**, the recruiter issues a **per-application signed assessment link** (policy in PRD **Architectural decisions**); the candidate completes the test **outside** LTI ATS. The recruiter **manually** records **pass/fail/pending** on the **Assessment attempt** row—there is **no API exchange** with vendors in MVP. For **interviews**, the **integration worker** handles **calendar** and **email** provider calls (may be async); the API proposes slots and stores **Interview** + feedback. **Hire** updates **Application** outcome and **Job requisition** fill counters, with audit entries.
 
 ```mermaid
 flowchart TB
