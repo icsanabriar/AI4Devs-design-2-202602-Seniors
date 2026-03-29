@@ -16,7 +16,7 @@ Define **why this repository exists**, **what “done” means** at course level
 
 ## Rule stack (numeric order)
 
-Rule files use prefixes **`10-`** … **`60-`** for stable ordering and extension.
+Rule files use prefixes **`10-`** … **`60-`** as the **required baseline**. Additional numbered rules (e.g. `70-`, `80-`) MAY be added in sequence without conflicting with this stack; health checks MUST verify that all baseline files are present and that every file in **`.cursor/rules/`** follows the `<NN>-*.mdc` numbering convention (no unnumbered legacy duplicates).
 
 | Order | File | Topic |
 |-------|------|--------|

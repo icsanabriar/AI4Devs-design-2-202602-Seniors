@@ -62,7 +62,7 @@ Do **not** use malformed stems such as bare **`-prd.md`** or **`LTI-/LTI-.md`**;
 
 ### Authoritative rules (single stack)
 
-**`.cursor/rules/`** contains **only** these six files—**no** parallel unnumbered legacy rules (e.g. `project-overview.mdc` without the `10-` prefix):
+**`.cursor/rules/`** MUST contain at minimum these six **baseline** files. Additional numbered rule files (e.g. `70-`, `80-`) may be added without conflicting with this list—**no** parallel unnumbered legacy rules (e.g. `project-overview.mdc` without the `10-` prefix):
 
 | File |
 |------|
@@ -73,7 +73,7 @@ Do **not** use malformed stems such as bare **`-prd.md`** or **`LTI-/LTI-.md`**;
 | `50-diagram-standards.mdc` |
 | `60-review-and-validation.mdc` |
 
-If you extend governance, add a **new numbered** file and update **`.cursor/rules/10-project-overview.mdc`** (stack table) and this README—**do not** duplicate the same policy under two filenames.
+If you extend governance, add a **new numbered** file (next available number in sequence) and update **`.cursor/rules/10-project-overview.mdc`** (stack table) and this README—**do not** duplicate the same policy under two filenames.
 
 ## Architecture: how the pieces fit
 
@@ -185,7 +185,7 @@ Run this when touching **`.cursor/`**, before merge, or during periodic audits. 
 
 | # | Check | How to verify (examples) | Pass if |
 |---|--------|---------------------------|---------|
-| 1 | **Rules stack** | List **`.cursor/rules/`** | Exactly **six** files matching **`10-*.mdc`** through **`60-*.mdc`**; filenames align with the stack table in **`.cursor/rules/10-project-overview.mdc`**. |
+| 1 | **Rules stack** | List **`.cursor/rules/`** | All **six baseline** files (`10-` through `60-`) are present; any additional files follow the `<NN>-*.mdc` numbering convention with no unnumbered legacy duplicates; filenames align with the stack table in **`.cursor/rules/10-project-overview.mdc`**. |
 | 2 | **Agents** | List **`.cursor/agents/`** | **`architect.md`**, **`product-manager.md`**, **`product-owner.md`**, **`documentation-auditor.md`** present; each references **`.cursor/rules/NN-*.mdc`** and **`.cursor/skills/.../SKILL.md`** paths that exist. |
 | 3 | **Active skills** | List **`.cursor/skills/`** | Folders **`build-backlog`**, **`commit`**, **`develop-architect`**, **`generate-prd`**, **`validate-artifacts`** each contain **`SKILL.md`**; **`commit/examples.md`** exists. |
 | 4 | **README vs tree** | Open [Files on disk](#files-on-disk-authoritative-active-layout) | Every **non-legacy** path in the table exists on disk; no orphaned active skill folder missing from the table. |
@@ -251,7 +251,7 @@ Run this when touching **`.cursor/`**, before merge, or during periodic audits. 
 
 Use when reviewing a PR or periodically auditing the repo tooling.
 
-- [ ] **`.cursor/rules/`** contains **only** the six numbered `10-`–`60-` `.mdc` files (no unnumbered legacy duplicates).
+- [ ] **`.cursor/rules/`** contains all **six baseline** numbered `.mdc` files (`10-` through `60-`); any additional rule files use the next number in sequence and follow the `<NN>-*.mdc` convention (no unnumbered legacy duplicates).
 - [ ] All **`.cursor/agents/*.md`** references to rules use **`.cursor/rules/NN-*.mdc`** paths—no stale unnumbered filenames.
 - [ ] Each **agent** points to **real** skill paths under **`.cursor/skills/`**.
 - [ ] **Path conventions** in rules, skills, and docs agree (`<NNN>` three-digit, `LTI-<CONTRIBUTOR-SLUG>/`).
